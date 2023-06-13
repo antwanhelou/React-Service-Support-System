@@ -1,164 +1,99 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Button, Drawer, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@material-ui/core';
+import ReservationExpandedScreen from './ReservationExpandedScreen';
+import { Box } from '@mui/material';
 
-type Anchor = 'left';
-
-interface Reservation {
-  id: number;
-  customer: string;
-  partner: string;
-  taskObject: string;
-}
-
-export default function ProblematicReservationsListScreen() {
-  const [state, setState] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const [iconExpanded, setIconExpanded] = React.useState(false); // State variable for icon expansion
-  const [reservations, setReservations] = React.useState<Reservation[]>([]);
-
-  const toggleDrawer =
-    (anchor: Anchor, open: boolean) =>
-    (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
-      ) {
-        return;
-      }
-
-      setState({ ...state, [anchor]: open });
-    };
-
-  const handleIconClick = () => {
-    setIconExpanded(!iconExpanded); // Toggle the state of icon expansion
-    setState({ ...state, left: !state.left }); // Toggle the state of the drawer
-  };
+function ProblematicReservationsListScreen() {
+  const [reservations, setReservations] = useState([]);
+  const [page, setPage] = useState(0);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentReservation, setCurrentReservation] = useState(null);
+  const pageSize = 8;
 
   const getProblematicReservations = async () => {
     try {
-      // Make an API call to fetch the problematic reservations list
-      const response = await fetch('/api/problematic-reservations');
-      const data = await response.json();
-      setReservations(data);
+      const data = {
+        startIndex: page * pageSize,
+        count: pageSize
+      };
+
+      const res = await axios.post('https://wosh-test.herokuapp.com/api/service/getProblematicReservations', data);
+      console.log(res.data);
+      setReservations(res.data);
     } catch (error) {
-      console.error('Error fetching problematic reservations:', error);
+      console.error("Failed to fetch data: ", error);
     }
   };
 
-  React.useEffect(() => {
+  const goToNextPage = () => {
+    setPage(page + 1);
+  };
+
+  const goToPreviousPage = () => {
+    if (page > 0) {
+      setPage(page - 1);
+    }
+  };
+
+  const openReservationDialog = (reservation) => {
+    setCurrentReservation(reservation);
+    setOpenDialog(true);
+  };
+
+  const closeReservationDialog = () => {
+    setCurrentReservation(null);
+    setOpenDialog(false);
+  };
+
+  useEffect(() => {
     getProblematicReservations();
-  }, []);
-
-  const table = (
-    <TableContainer component={Paper} style={{ maxWidth: '1000px' }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Customer</TableCell>
-            <TableCell>Partner</TableCell>
-            <TableCell>Task Object</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {reservations.map((reservation) => (
-            <TableRow key={reservation.id}>
-              <TableCell>{reservation.customer}</TableCell>
-              <TableCell>{reservation.partner}</TableCell>
-              <TableCell>{reservation.taskObject}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-
-  const list = (anchor: Anchor) => (
-    <Box
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <br />
-      <br />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  }, [page]);
 
   return (
-    <>
-      <div style={{ position: 'relative' }}>
-        <Button
-          onClick={handleIconClick}
-          style={{
-            position: 'fixed',
-            top: '16px',
-            left: '16px',
-            zIndex: 9999,
-            padding: '8px',
-            transform: iconExpanded ? 'scale(1.2)' : 'scale(1)', // Scale the icon when expanded
-            transition: 'transform 0.2s ease-in-out', // Add a transition effect
-            color: state.left ? '#741188' : 'white', // Change the color of the icon when the drawer is open
-          }}
-        >
-          <GiHamburgerMenu size={24} /> {/* Increase the size of the icon */}
-        </Button>
-        <Drawer
-          anchor="left"
-          open={state.left}
-          onClose={toggleDrawer('left', false)}
-        >
-          {list('left')}
-        </Drawer>
-      </div>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="10vh"
-        marginTop="5rem" // Add margin-top to create space below the problematic reservations list
-      >
-        {table}
+    <div>
+      <Drawer variant="permanent" anchor="left">
+        {/* Drawer contents here */}
+      </Drawer>
+      <br /><br /><br /><br />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{backgroundColor: "#dd0db0"}}>Customer</TableCell>
+              <TableCell style={{backgroundColor: "#dd0db0"}} align="right">Partner</TableCell>
+              <TableCell style={{backgroundColor: "#dd0db0"}} align="right">Task Object</TableCell>
+              <TableCell style={{backgroundColor: "#dd0db0"}} align="right"> </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {reservations.map((reservation) => (
+              <TableRow key={reservation.id}>
+                <TableCell component="th" scope="row">{reservation.customer.name}</TableCell>
+                <TableCell align="right">{reservation.assignedPartners[0].name}</TableCell>
+                <TableCell align="right">{reservation.taskObject.nickName}</TableCell>
+                <TableCell align="right">
+  <Button onClick={() => openReservationDialog(reservation)}>View</Button>
+</TableCell>
+
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box display="flex" justifyContent="center">
+      <Button onClick={goToPreviousPage}>Previous Page</Button>
+      <Button onClick={goToNextPage}>Next Page</Button>
       </Box>
-    </>
+      {currentReservation && (
+        <ReservationExpandedScreen
+          open={openDialog}
+          onClose={closeReservationDialog}
+          reservation={currentReservation}
+        />
+      )}
+    </div>
   );
 }
+
+export default ProblematicReservationsListScreen;

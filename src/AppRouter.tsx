@@ -7,13 +7,13 @@ import React from 'react';
 
 const AppRouter: FC = () => {
   return (
-    <Router>
-      <Routes>
   
+      <Routes>
+      
         <Route path="/problematic-reservations" element={<ProblematicReservationsListScreen />} />
-        <Route path="/reservation" element={<ReservationExpandedScreen />} />
+        <Route path="/reservation/:id" element={<ReservationExpandedScreen open={undefined} onClose={undefined} reservation={undefined}/>} />
       </Routes>
-    </Router>
+   
   );
 };
 

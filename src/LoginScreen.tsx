@@ -28,7 +28,7 @@ function LoginScreen(props) {
   const passwordChangeHandler = (event) => {
     const passwordValue = event.target.value;
     setEnteredPassword(passwordValue);
-    setFormIsValid(passwordValue.trim().length > 6 && enteredEmail.includes('@'));
+    setFormIsValid(passwordValue.trim().length > 3 && enteredEmail.includes('@'));
   };
 
   const validateEmailHandler = () => {
@@ -36,7 +36,7 @@ function LoginScreen(props) {
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    setPasswordIsValid(enteredPassword.trim().length > 3);
   };
 
   const submitHandler = (event) => {
