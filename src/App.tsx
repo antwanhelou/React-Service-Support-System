@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
 import { Container } from "@mui/material";
-import LoginScreen from "./LoginScreen";
-import ProblematicReservationsListScreen from "./ProblematicReservationsListScreen";
+import LoginScreen from "./components/LoginScreen";
+import ProblematicReservationsListScreen from "./components/ProblematicReservationsListScreen";
 import AppRouter from "./AppRouter";
 import MainHeader from "./MainHeader/MainHeader";
 type AppProps = {};
@@ -35,7 +35,7 @@ function App() {
 
   return (
     <Container>
-      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+
       <main>
         {!isLoggedIn && <LoginScreen onLogin={loginHandler} email={email} />}
         {isLoggedIn && <ProblematicReservationsListScreen />}
