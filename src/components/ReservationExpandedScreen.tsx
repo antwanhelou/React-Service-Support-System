@@ -92,8 +92,11 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
                 <Typography>Name: {reservation.taskObject.nickName}, {reservation.taskObject.type}</Typography>
                 <Typography>Plate Number: {reservation.taskObject.plateNumber}</Typography>
                 <Typography>Year: {reservation.taskObject.year}</Typography>
-             
-      
+                <Typography variant="h6" className={classes.sectionTitle}></Typography>
+                <Typography variant="h6" className={classes.sectionTitle}>FeedBack:</Typography>
+                <Typography>message: {reservation.feedback.message}</Typography>
+                <Typography>FeedBack type: {reservation.feedback.feedbackType}</Typography>
+                <Typography>Rating: {reservation.feedback.feedbackStars}</Typography>
       
               </CardContent>
             </Card>
@@ -117,11 +120,12 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
                 <Typography variant="h6" className={classes.sectionTitle}>Customer:</Typography>
                 <Typography>Name: {reservation.customer.name}</Typography>
                 <Typography>Email: {reservation.customer.email}</Typography>
-                
+                <Typography variant="h6" className={classes.sectionTitle}></Typography>
                 <Typography variant="h6" className={classes.sectionTitle}>Partner:</Typography>
                 <Typography>Name: {reservation.assignedPartners[0].name}</Typography>
                 <Typography>Email: {reservation.assignedPartners[0].email}</Typography>
                 <Typography>Stars: {reservation.assignedPartners[0].stars}</Typography>
+                <Typography>Reviews: {reservation.assignedPartners[0].reviews}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -131,7 +135,7 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Status</TableCell>
+                    <TableCell>Reservation Status</TableCell>
                     <TableCell>Status Text</TableCell>
                     <TableCell>Time</TableCell>
                   </TableRow>

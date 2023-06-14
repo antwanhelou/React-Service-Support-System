@@ -6,6 +6,11 @@ import { AppBar, Box, IconButton, List, ListItemButton, ListItemIcon, Toolbar, m
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Pagination } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProblematicReservations, setCurrentReservation } from '../Redux/actions';
+import {AppDispatch} from '../Redux/store'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 const StyledPagination = styled(Pagination)(({ theme }) => ({
   '& .MuiPaginationItem-root': {
     borderRadius: '50%',
@@ -36,44 +41,30 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 function ProblematicReservationsListScreen() {
-  const [reservations, setReservations] = useState([]);
+  const dispatch: AppDispatch= useDispatch()
+  const reservations = useSelector((state:any) => state.reservations);
+  const currentReservation = useSelector((state:any) => state.currentReservation);
   const [page, setPage] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentReservation, setCurrentReservation] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pageSize = 8;
-
-  const getProblematicReservations = async () => {
-    try {
-      const data = {
-        startIndex: page * pageSize,
-        count: pageSize
-      };
-
-      const res = await axios.post('https://wosh-test.herokuapp.com/api/service/getProblematicReservations', data);
-      console.log(res.data);
-      setReservations(res.data);
-    } catch (error) {
-      console.error("Failed to fetch data: ", error);
-    }
-  };
 
   const handlePageChange = (event, value) => {
     setPage(value - 1);
   };
 
   useEffect(() => {
-    getProblematicReservations();
-  }, [page]);
+    dispatch(getProblematicReservations(page, pageSize));
+  }, [page, dispatch]);
 
   const openReservationDialog = (reservation) => {
-    setCurrentReservation(reservation);
+    dispatch(setCurrentReservation(reservation));
     setOpenDialog(true);
   };
 
   const closeReservationDialog = () => {
-    setCurrentReservation(null);
+    dispatch(setCurrentReservation(null));
     setOpenDialog(false);
   };
 
@@ -118,7 +109,7 @@ function ProblematicReservationsListScreen() {
                   <StyledTableCell align="right">{reservation.assignedPartners[0].name}</StyledTableCell>
                   <StyledTableCell align="right">{reservation.taskObject.nickName}</StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button variant="contained" color="primary" onClick={() => openReservationDialog(reservation)}>View</Button>
+                    <Button  onClick={() => openReservationDialog(reservation)}><OpenInNewIcon/></Button>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
