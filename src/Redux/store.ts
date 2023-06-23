@@ -3,9 +3,12 @@ import thunk, { ThunkAction } from 'redux-thunk';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './reducer';
+import authReducer from './auth';
 
-// Define root state and Thunk action types
+// store.ts
 export type RootState = ReturnType<typeof rootReducer>;
+
+
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
@@ -13,17 +16,17 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
-// Configuration for redux-persist
+// store.ts
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['reservation', 'auth'], // Add 'auth' to persist list
 };
 
-// Wrap the rootReducer with persistReducer
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Create the store with persisted reducer and thunk middleware
-export const store = configureStore({
+const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -32,11 +35,9 @@ export const store = configureStore({
     }),
 });
 
-// Define AppDispatch type
+
 export type AppDispatch = typeof store.dispatch;
 
-// Create the persistor
-export const persistor = persistStore(store);
+const persistor = persistStore(store);
 
-// Export store and persistor
-export default { store, persistor };
+export { store, persistor };

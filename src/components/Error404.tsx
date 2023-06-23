@@ -18,9 +18,7 @@ const Error404 = () => {
       <Typography variant="body1" paragraph>
         The page you are looking for does not exist.
       </Typography>
-      <Button component={Link} to="/" variant="contained" color="primary">
-        Go to Home
-      </Button>
+     
     </Box>
   );
 };

@@ -1,47 +1,51 @@
-import { ReactElement, useEffect, useState } from "react";
-import { Container } from "@mui/material";
-import LoginScreen from "./components/LoginScreen";
-import ProblematicReservationsListScreen from "./components/ProblematicReservationsListScreen";
-import AppRouter from "./AppRouter";
-import MainHeader from "./MainHeader/MainHeader";
-type AppProps = {};
+import React, { useEffect } from 'react';
+import { Container } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from './Redux/store';
+import { login, logout } from './Redux/auth';
+import LoginScreen from './components/LoginScreen';
+import ProblematicReservationsListScreen from './components/ProblematicReservationsListScreen';
 
-const IS_LOGGED_IN_KEY = "isLoggedIn";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import Error404 from './components/Error404';
+const IS_LOGGED_IN_KEY = 'isLoggedIn';
+const EMAIL_KEY = 'email';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setMail] = useState("");
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const username = useSelector((state: RootState) => state.auth.username);
+  const dispatch: AppDispatch = useDispatch();
+  
   useEffect(() => {
-    const storeIsLoggedIn = localStorage.getItem(IS_LOGGED_IN_KEY);
+    const storedIsLoggedIn = localStorage.getItem(IS_LOGGED_IN_KEY);
+    const storedEmail = localStorage.getItem(EMAIL_KEY);
+   
 
-    if (storeIsLoggedIn === "1") {
-      setIsLoggedIn(true);
+    if (storedIsLoggedIn === 'true' && storedEmail) {
+      dispatch(login({ username: storedEmail, password: '' }));
     }
-  }, []);
-  useEffect(() => {
-    const storeMail = localStorage.getItem("EMAIL");
-    setMail(storeMail);
-  }, []);
-  const loginHandler = (email, password) => {
-    localStorage.setItem(IS_LOGGED_IN_KEY, "1");
-    localStorage.setItem("EMAIL", email);
-    setIsLoggedIn(true);
+  }, [dispatch]);
+
+  const loginHandler = (username: string, password: string) => {
+    dispatch(login({ username, password }));
+   
   };
 
   const logoutHandler = () => {
-    localStorage.setItem(IS_LOGGED_IN_KEY, "0");
-    setIsLoggedIn(false);
+    dispatch(logout());
+   
   };
 
   return (
+    
     <Container>
-
-      <main>
-        {!isLoggedIn && <LoginScreen onLogin={loginHandler} email={email} />}
-        {isLoggedIn && <ProblematicReservationsListScreen />}
-        <AppRouter />
-      </main>
+      <Routes>
+        <Route path="/login" element={!isLoggedIn ? <LoginScreen onLogin={loginHandler} email={username} /> : <Navigate to="/problematic_reservations" />}/>
+        <Route path="/problematic_reservations" element={isLoggedIn ? <ProblematicReservationsListScreen onLogout={logoutHandler} /> : <Navigate to="/login" />}/>
+        <Route path="*" element={<Error404/>} />
+      </Routes>
     </Container>
+  
   );
 }
 

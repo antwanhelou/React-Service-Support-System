@@ -1,38 +1,47 @@
+import { combineReducers } from 'redux';
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import authReducer from './auth';
+
 const initialState = {
-    reservations: [],
-    currentReservation: null
-  };
-  
-const FETCH_RESERVATION_START = "FETCH_RESERVATION_START";
-const FETCH_RESERVATION_SUCCESS = "FETCH_RESERVATION_SUCCESS";
-const FETCH_RESERVATION_FAILURE = "FETCH_RESERVATION_FAILURE";
-  const reducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'SET_RESERVATIONS':
-        return { ...state, reservations: action.payload };
-      case 'SET_CURRENT_RESERVATION':
-        return { ...state, currentReservation: action.payload };
-      default:
-        return state;
-    }
-  };
-  const initialState1 = {
-    reservation: {},
-    loading: false,
-    error: null
-  };
-  
-  export const reservationReducer = (state = initialState, action) => {
-    switch(action.type) {
-      case FETCH_RESERVATION_START:
-        return { ...state, loading: true };
-      case FETCH_RESERVATION_SUCCESS:
-        return { ...state, loading: false, reservation: action.payload };
-      case FETCH_RESERVATION_FAILURE:
-        return { ...state, loading: false, error: action.payload };
-      default:
-        return state;
-    }
-  };
-  export default reducer;
-  
+  reservations: [],
+  currentReservation: null
+};
+
+const reservationReducer = (state = initialState, action) => {
+  switch(action.type) {
+    case 'SET_RESERVATIONS':
+      return { ...state, reservations: action.payload };
+    case 'SET_CURRENT_RESERVATION':
+      return { ...state, currentReservation: action.payload };
+      case 'reservation/handleResolve/fulfilled':  // <-- Add this case
+      return {
+        ...state,
+        reservations: state.reservations.filter(
+          reservation => reservation.id !== action.payload.reservationId
+        )
+      };
+    
+    default:
+      return state;
+  }
+};
+
+const persistConfig = {
+  key: 'reservation',
+  storage,
+};
+
+const persistedReservationReducer = persistReducer(persistConfig, reservationReducer);
+
+const rootReducer = combineReducers({
+  reservation: persistedReservationReducer,
+  auth: authReducer,
+});
+
+export default rootReducer;
+
+export const persistStoreData = (data: any) => ({
+  type: 'PERSIST_STORE_DATA',
+  payload: data
+});

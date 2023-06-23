@@ -11,6 +11,15 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../Redux/auth';
+import { AppDispatch } from '../Redux/store';
+import { CircularProgress } from '@mui/material';
+import { link } from 'fs';
+import ProblematicReservationsListScreen from './ProblematicReservationsListScreen';
+import { useNavigate } from 'react-router-dom';
+
 
 function LoginScreen(props) {
   const [enteredEmail, setEnteredEmail] = useState(props.email || '');
@@ -18,7 +27,8 @@ function LoginScreen(props) {
   const [enteredPassword, setEnteredPassword] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
-
+  const isAuthenticated = useSelector((state:any) => state.auth.isAuthenticated);
+  const [isLoading, setIsLoading] = useState(false);
   const emailChangeHandler = (event) => {
     const emailValue = event.target.value;
     setEnteredEmail(emailValue);
@@ -38,13 +48,39 @@ function LoginScreen(props) {
   const validatePasswordHandler = () => {
     setPasswordIsValid(enteredPassword.trim().length > 3);
   };
-
-  const submitHandler = (event) => {
+  const dispatch:AppDispatch = useDispatch();
+  const navigate = useNavigate();
+  const submitHandler = async (event) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    setIsLoading(true); 
+  
+   // Set isLoading to true before dispatching the login action
+  
+    try {
+      const action = await dispatch(login({ username: enteredEmail, password: enteredPassword }));
+      console.log('login action', action);
+      navigate("/problematic_reservations");
+      // Handle the response or perform any necessary actions here
+  
+      setIsLoading(false); // Set isLoading to false after the login action is complete
+    } catch (error) {
+      // Handle any errors that occurred during the login process
+      setIsLoading(false); // Set isLoading to false in case of an error
+    }
   };
+  
+  
+  
+
 
   return (
+    <Container>
+    {isLoading ? (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        Securly logging you in
+        <CircularProgress />
+      </div>
+    ) : (
     <ThemeProvider theme={createTheme()}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -65,9 +101,9 @@ function LoginScreen(props) {
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="username"
               label="Email Address"
-              name="email"
+              name="username"
               autoComplete="email"
               autoFocus
               value={enteredEmail}
@@ -107,6 +143,9 @@ function LoginScreen(props) {
         </Box>
       </Container>
     </ThemeProvider>
+    )}
+    </Container>
+    
   );
 }
 

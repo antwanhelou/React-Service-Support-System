@@ -10,8 +10,8 @@ const AppRouter: FC = () => {
   return (
   
       <Routes>
-      {/* <Route path="*" element={<Error404 />} /> */}
-        <Route path="/problematic-reservations" element={<ProblematicReservationsListScreen />} />
+      
+        <Route path="/problematic-reservations" element={<ProblematicReservationsListScreen onLogout={undefined} />} />
         <Route path="/reservation/:id" element={<ReservationExpandedScreen open={undefined} onClose={undefined} reservation={undefined}/>} />
       </Routes>
    
