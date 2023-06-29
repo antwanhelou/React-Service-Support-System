@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Typography, Button, Box } from '@mui/material';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Typography, Button, Box } from "@mui/material";
 
 const Error404 = () => {
   return (
@@ -18,7 +18,6 @@ const Error404 = () => {
       <Typography variant="body1" paragraph>
         The page you are looking for does not exist.
       </Typography>
-     
     </Box>
   );
 };

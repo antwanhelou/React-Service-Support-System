@@ -16,10 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../Redux/auth';
 import { AppDispatch } from '../Redux/store';
 import { CircularProgress } from '@mui/material';
-import { link } from 'fs';
-import ProblematicReservationsListScreen from './ProblematicReservationsListScreen';
 import { useNavigate } from 'react-router-dom';
-
 
 function LoginScreen(props) {
   const [enteredEmail, setEnteredEmail] = useState(props.email || '');
@@ -27,8 +24,10 @@ function LoginScreen(props) {
   const [enteredPassword, setEnteredPassword] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
-  const isAuthenticated = useSelector((state:any) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const emailChangeHandler = (event) => {
     const emailValue = event.target.value;
     setEnteredEmail(emailValue);
@@ -48,104 +47,102 @@ function LoginScreen(props) {
   const validatePasswordHandler = () => {
     setPasswordIsValid(enteredPassword.trim().length > 3);
   };
-  const dispatch:AppDispatch = useDispatch();
+
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
+
   const submitHandler = async (event) => {
     event.preventDefault();
-    setIsLoading(true); 
-  
-   // Set isLoading to true before dispatching the login action
-  
+    setIsLoading(true);
+    setError('');
+
     try {
       const action = await dispatch(login({ username: enteredEmail, password: enteredPassword }));
       console.log('login action', action);
-      navigate("/problematic_reservations");
-      // Handle the response or perform any necessary actions here
-  
-      setIsLoading(false); // Set isLoading to false after the login action is complete
+      navigate('/problematic_reservations');
+      setIsLoading(false);
     } catch (error) {
-      // Handle any errors that occurred during the login process
-      setIsLoading(false); // Set isLoading to false in case of an error
+      setIsLoading(false);
+      setError('Invalid email or password. Please try again.');
     }
   };
-  
-  
-  
-
 
   return (
     <Container>
-    {isLoading ? (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        Securly logging you in
-        <CircularProgress />
-      </div>
-    ) : (
-    <ThemeProvider theme={createTheme()}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
+      {isLoading ? (
+        <div
+          style={{
             display: 'flex',
-            flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
+            height: '100vh',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={submitHandler} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Email Address"
-              name="username"
-              autoComplete="email"
-              autoFocus
-              value={enteredEmail}
-              onChange={emailChangeHandler}
-              onBlur={validateEmailHandler}
-              error={!emailIsValid}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={enteredPassword}
-              onChange={passwordChangeHandler}
-              onBlur={validatePasswordHandler}
-              error={!passwordIsValid}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={!formIsValid}
+          Securly logging you in
+          <CircularProgress />
+        </div>
+      ) : (
+        <ThemeProvider theme={createTheme()}>
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <Box
+              sx={{
+                marginTop: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
             >
-              Sign In
-            </Button>
-            
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
-    )}
+              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <Box component="form" onSubmit={submitHandler} noValidate sx={{ mt: 1 }}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Email Address"
+                  name="username"
+                  autoComplete="email"
+                  autoFocus
+                  value={enteredEmail}
+                  onChange={emailChangeHandler}
+                  onBlur={validateEmailHandler}
+                  error={!emailIsValid}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={enteredPassword}
+                  onChange={passwordChangeHandler}
+                  onBlur={validatePasswordHandler}
+                  error={!passwordIsValid}
+                />
+                {error && <Typography color="error"> wrong info{error}</Typography>}
+               
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={!formIsValid}
+                >
+                  Sign In
+                </Button>
+              </Box>
+            </Box>
+          </Container>
+        </ThemeProvider>
+      )}
     </Container>
-    
   );
 }
 

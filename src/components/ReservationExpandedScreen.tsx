@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -17,50 +17,50 @@ import {
   TableRow,
   TablePagination,
   TextField,
-  Modal
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
-import StarIcon from '@mui/icons-material/Star';
-import './corner.css';
-import { useDispatch } from 'react-redux';
-import { handleResolve, handleUnresolved } from '../Redux/actions';
-import { AppDispatch } from '../Redux/store';
+  Modal,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import StarIcon from "@mui/icons-material/Star";
+import "./corner.css";
+import { useDispatch } from "react-redux";
+import { handleResolve, handleUnresolved } from "../Redux/actions";
+import { AppDispatch } from "../Redux/store";
 
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: theme.spacing(2),
     padding: theme.spacing(2),
     backgroundColor: theme.palette.grey[100],
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
   },
   sectionTitle: {
     marginBottom: theme.spacing(1),
     color: theme.palette.primary.main,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   textField: {
     margin: theme.spacing(2),
   },
   resolveButton: {
-    backgroundImage: 'linear-gradient(45deg, #00d4ff 30%, #377909 90%)',
-    color: 'white',
+    backgroundImage: "linear-gradient(45deg, #00d4ff 30%, #377909 90%)",
+    color: "white",
   },
   unresolveButton: {
-    backgroundImage: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    color: 'white',
+    backgroundImage: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    color: "white",
   },
   modalContent: {
     // styles for modalContent
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-    textAlign: 'center',
+    textAlign: "center",
   },
 }));
 
@@ -68,16 +68,16 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const dispatch: AppDispatch = useDispatch();
-  const [errorModalOpen, setErrorModalOpen] = useState(false); 
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
 
   const handleResolveClick = () => {
-    if (message !== '') {
+    if (message !== "") {
       const payload = {
         reservationId: reservation.id,
-        status: 'RESOLVED',
-        serviceTeamUserId: '4c61a0a9-7a18-4c1d-b2f7-3f8a4f1f16c9',
+        status: "RESOLVED",
+        serviceTeamUserId: "4c61a0a9-7a18-4c1d-b2f7-3f8a4f1f16c9",
         message: message,
       };
 
@@ -86,7 +86,7 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
           onClose();
         })
         .catch((error) => {
-          console.error('Failed to resolve reservation: ', error);
+          console.error("Failed to resolve reservation: ", error);
         });
     } else {
       // Show an error or prompt the user to provide a message
@@ -95,11 +95,11 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
   };
 
   const handleUnresolvedClick = () => {
-    if (message !== '') {
+    if (message !== "") {
       const payload = {
         reservationId: reservation.id,
-        status: 'UNRESOLVED',
-        serviceTeamUserId: '4c61a0a9-7a18-4c1d-b2f7-3f8a4f1f16c9',
+        status: "UNRESOLVED",
+        serviceTeamUserId: "4c61a0a9-7a18-4c1d-b2f7-3f8a4f1f16c9",
         message: message,
       };
 
@@ -108,7 +108,7 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
           onClose();
         })
         .catch((error) => {
-          console.error('Failed to resolve reservation: ', error);
+          console.error("Failed to resolve reservation: ", error);
         });
     } else {
       // Show an error or prompt the user to provide a message
@@ -134,7 +134,7 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
   const logTimeWithUTCOffset = (logTime) => {
     const logTimeUTC = new Date(logTime);
     logTimeUTC.setUTCHours(logTimeUTC.getUTCHours() + 3); // Add 3 hours to the UTC time
-    return logTimeUTC.toLocaleString('en-US', { timeZoneName: 'short' });
+    return logTimeUTC.toLocaleString("en-US", { timeZoneName: "short" });
   };
 
   return (
@@ -148,20 +148,39 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
                 <Typography variant="h6" className={classes.sectionTitle}>
                   Task object:
                 </Typography>
-                <Typography>Name: {reservation.taskObject.nickName}, {reservation.taskObject.type}</Typography>
-                <Typography>Plate Number: {reservation.taskObject.plateNumber}</Typography>
+                <Typography>
+                  Name: {reservation.taskObject.nickName},{" "}
+                  {reservation.taskObject.type}
+                </Typography>
+                <Typography>
+                  Plate Number: {reservation.taskObject.plateNumber}
+                </Typography>
                 <Typography>Year: {reservation.taskObject.year}</Typography>
-                <Typography variant="h6" className={classes.sectionTitle}></Typography>
+                <Typography
+                  variant="h6"
+                  className={classes.sectionTitle}
+                ></Typography>
                 <Typography variant="h6" className={classes.sectionTitle}>
                   FeedBack:
                 </Typography>
                 <Typography>
-                  message: {reservation.feedback ? reservation.feedback.message : 'No message provided'}
+                  message:{" "}
+                  {reservation.feedback
+                    ? reservation.feedback.message
+                    : "No message provided"}
                 </Typography>
                 <Typography>
-                  FeedBack type: {reservation.feedback ? reservation.feedback.feedbackType : 'No feedback provided'}
+                  FeedBack type:{" "}
+                  {reservation.feedback
+                    ? reservation.feedback.feedbackType
+                    : "No feedback provided"}
                 </Typography>
-                <Typography>Rating: {reservation.feedback ? reservation.feedback.feedbackStars : 'No stars provided'}</Typography>
+                <Typography>
+                  Rating:{" "}
+                  {reservation.feedback
+                    ? reservation.feedback.feedbackStars
+                    : "No stars provided"}
+                </Typography>
               </CardContent>
             </Card>
 
@@ -185,27 +204,43 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
                 </Typography>
                 <Typography>Name: {reservation.customer.name}</Typography>
                 <Typography>Email: {reservation.customer.email}</Typography>
-                <Typography variant="h6" className={classes.sectionTitle}></Typography>
+                <Typography
+                  variant="h6"
+                  className={classes.sectionTitle}
+                ></Typography>
                 <Typography variant="h6" className={classes.sectionTitle}>
                   Partner:
                 </Typography>
-                <Typography>Name: {reservation.assignedPartners[0].name}</Typography>
-                <Typography>Email: {reservation.assignedPartners[0].email}</Typography>
-                <Typography component="div" variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography>
+                  Name: {reservation.assignedPartners[0].name}
+                </Typography>
+                <Typography>
+                  Email: {reservation.assignedPartners[0].email}
+                </Typography>
+                <Typography
+                  component="div"
+                  variant="body1"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
                   <span>Stars:</span>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
                     {[...Array(5)].map((_, index) => (
                       <StarIcon
                         key={index}
                         style={{
-                          color: index < reservation.assignedPartners[0].stars ? '#FFD700' : '#C0C0C0',
+                          color:
+                            index < reservation.assignedPartners[0].stars
+                              ? "#FFD700"
+                              : "#C0C0C0",
                         }}
                       />
                     ))}
                   </div>
                 </Typography>
 
-                <Typography>Reviews: {reservation.assignedPartners[0].reviews}</Typography>
+                <Typography>
+                  Reviews: {reservation.assignedPartners[0].reviews}
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -224,12 +259,21 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
             </TableHead>
             <TableBody>
               {(rowsPerPage > 0
-                ? reservation.reservationEvents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                ? reservation.reservationEvents.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
                 : reservation.reservationEvents
               ).map((log) => (
                 <TableRow key={log.id}>
                   <TableCell>
-                    <div style={{ backgroundColor: log.statusColor, padding: '10px', borderRadius: '50px' }}>
+                    <div
+                      style={{
+                        backgroundColor: log.statusColor,
+                        padding: "10px",
+                        borderRadius: "50px",
+                      }}
+                    >
                       {log.reservationStatus}
                     </div>
                   </TableCell>
@@ -240,12 +284,12 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
             count={reservation.reservationEvents.length}
             rowsPerPage={rowsPerPage}
             page={page}
             SelectProps={{
-              inputProps: { 'aria-label': 'rows per page' },
+              inputProps: { "aria-label": "rows per page" },
               native: true,
             }}
             onPageChange={handleChangePage}
@@ -255,22 +299,29 @@ function ReservationExpandedScreen({ open, onClose, reservation }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button onClick={handleUnresolvedClick} className={classes.unresolveButton}>
+        <Button
+          onClick={handleUnresolvedClick}
+          className={classes.unresolveButton}
+        >
           UNRESOLVED
         </Button>
         <Button onClick={handleResolveClick} className={classes.resolveButton}>
           Resolve
         </Button>
       </DialogActions>
-    
-    <Modal open={errorModalOpen} onClose={closeModal}>
-    <div className={classes.modalContent}>
-      <Typography variant="h5">Error</Typography>
-      <Typography>Please provide a message before resolving the reservation.</Typography>
-      <Button color='primary' onClick={closeModal}>Close</Button>
-    </div>
-  </Modal>
-</Dialog>
+
+      <Modal open={errorModalOpen} onClose={closeModal}>
+        <div className={classes.modalContent}>
+          <Typography variant="h5">Error</Typography>
+          <Typography>
+            Please provide a message before resolving the reservation.
+          </Typography>
+          <Button color="primary" onClick={closeModal}>
+            Close
+          </Button>
+        </div>
+      </Modal>
+    </Dialog>
   );
 }
 

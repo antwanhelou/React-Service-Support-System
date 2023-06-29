@@ -5,7 +5,6 @@ import { RootState, AppDispatch } from './Redux/store';
 import { login, logout } from './Redux/auth';
 import LoginScreen from './components/LoginScreen';
 import ProblematicReservationsListScreen from './components/ProblematicReservationsListScreen';
-
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Error404 from './components/Error404';
 const IS_LOGGED_IN_KEY = 'isLoggedIn';
@@ -40,8 +39,8 @@ function App() {
     
     <Container>
       <Routes>
-        <Route path="/login" element={!isLoggedIn ? <LoginScreen onLogin={loginHandler} email={username} /> : <Navigate to="/problematic_reservations" />}/>
-        <Route path="/problematic_reservations" element={isLoggedIn ? <ProblematicReservationsListScreen onLogout={logoutHandler} /> : <Navigate to="/login" />}/>
+        <Route path="/" element={!isLoggedIn ? <LoginScreen onLogin={loginHandler} email={username} /> : <Navigate to="/problematic_reservations" />}/>
+        <Route path="/problematic_reservations" element={isLoggedIn ? <ProblematicReservationsListScreen onLogout={logoutHandler} /> : <Navigate to="/" />}/>
         <Route path="*" element={<Error404/>} />
       </Routes>
     </Container>
